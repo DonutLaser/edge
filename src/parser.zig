@@ -34,7 +34,7 @@ const AST = struct {
 
 fn expect_token(token: *lexer.Token, expected: lexer.TokenType) ParserError!void {
     if (token.*.type != expected) {
-        std.debug.print("Expected '{s}', got {s}\n", .{ @tagName(expected), token.*.value });
+        std.debug.print("Parser error at line:{d} -> Expected '{s}', got {s}\n", .{ token.*.line, @tagName(expected), token.*.value });
         return ParserError.InvalidSyntax;
     }
 }

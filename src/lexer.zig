@@ -14,6 +14,7 @@ pub const TokenType = enum {
 pub const Token = struct {
     type: TokenType,
     value: []const u8,
+    line: u32,
 };
 
 pub const TokenList = struct {
@@ -57,8 +58,14 @@ pub fn lex(src: []u8) !TokenList {
     var result = TokenList.init();
 
     var cursor: u32 = 0;
+    var line: u32 = 0;
+
     while (cursor < src.len) {
         while (std.ascii.isSpace(src[cursor])) {
+            if (src[cursor] == '\n') {
+                line += 1;
+            }
+
             cursor += 1;
         }
 
@@ -71,28 +78,28 @@ pub fn lex(src: []u8) !TokenList {
 
             var word = src[start..cursor];
             if (std.mem.eql(u8, word, "func")) {
-                try result.push(Token{ .type = TokenType.Func, .value = "func" });
+                try result.push(Token{ .type = TokenType.Func, .value = "func", .line = line });
             } else if (std.mem.eql(u8, word, "void")) {
-                try result.push(Token{ .type = TokenType.Void, .value = "void" });
+                try result.push(Token{ .type = TokenType.Void, .value = "void", .line = line });
             } else {
-                try result.push(Token{ .type = TokenType.Identifier, .value = word });
+                try result.push(Token{ .type = TokenType.Identifier, .value = word, .line = line });
             }
         } else if (src[cursor] == '(') {
-            try result.push(Token{ .type = TokenType.LParen, .value = "(" });
+            try result.push(Token{ .type = TokenType.LParen, .value = "(", .line = line });
             cursor += 1;
         } else if (src[cursor] == ')') {
-            try result.push(Token{ .type = TokenType.RParen, .value = ")" });
+            try result.push(Token{ .type = TokenType.RParen, .value = ")", .line = line });
             cursor += 1;
         } else if (src[cursor] == '{') {
-            try result.push(Token{ .type = TokenType.LBrace, .value = "{" });
+            try result.push(Token{ .type = TokenType.LBrace, .value = "{", .line = line });
             cursor += 1;
         } else if (src[cursor] == '}') {
-            try result.push(Token{ .type = TokenType.RBrace, .value = "}" });
+            try result.push(Token{ .type = TokenType.RBrace, .value = "}", .line = line });
             cursor += 1;
         }
     }
 
-    try result.push(Token{ .type = TokenType.Eof, .value = "" });
+    try result.push(Token{ .type = TokenType.Eof, .value = "", .line = line });
 
     return result;
 }

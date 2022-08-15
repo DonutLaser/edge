@@ -21,10 +21,10 @@ func foo() i32 {
 }
 ```
 
-Multiple return values
+Multiple return values are returned by returning a tuple
 ```
 func foo() (i32, str) [
-    return 0, 'hello'
+    return (0, 'hello')
 ]
 ```
 

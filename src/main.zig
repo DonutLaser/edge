@@ -38,7 +38,7 @@ pub fn main() !void {
     defer allocator.free(src);
 
     var tokens = try lexer.lex(src);
-    tokens.dump();
+    // tokens.dump();
 
     _ = parser.parse(&tokens, &allocator) catch {
         return;
