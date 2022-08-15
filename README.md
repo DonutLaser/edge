@@ -28,6 +28,15 @@ func foo() (i32, str) [
 ]
 ```
 
+Defer function call
+```
+func foo() void {
+    ...
+}
+defer foo() # The function will be called when the call goes out of scope
+
+```
+
 # Variables
 Mutable variables
 ```

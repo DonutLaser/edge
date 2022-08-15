@@ -39,8 +39,8 @@ fn expect_token(token: *lexer.Token, expected: lexer.TokenType) ParserError!void
     }
 }
 
-fn unexpected_token(token: *lexer.Token) ParserError {
-    std.debug.print("Parser error at line:{d} -> Unexpected token {s}\n", .{@tagName(token.type)});
+fn unexpected_token(token: *lexer.Token) ParserError!void {
+    std.debug.print("Parser error at line:{d} -> Unexpected token {s}\n", .{ token.*.line, @tagName(token.type) });
     return ParserError.InvalidSyntax;
 }
 
@@ -107,7 +107,9 @@ fn parse_statement(tokens: *lexer.TokenList, allocator: *std.mem.Allocator) anye
         if (tokens.*.peek(1).type == lexer.TokenType.LParen) {
             result.data.function_call = try parse_function_call(tokens, allocator);
         }
-    } else {}
+    } else {
+        try unexpected_token(&token);
+    }
 
     return result;
 }
