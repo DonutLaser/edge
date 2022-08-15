@@ -1,14 +1,16 @@
 const std = @import("std");
 
 pub const TokenType = enum {
+    Comma,
+    Eof,
     Func,
     Identifier,
-    Void,
     LParen,
-    RParen,
     LBrace,
+    RParen,
     RBrace,
-    Eof,
+    StringLiteral,
+    Void,
 };
 
 pub const Token = struct {
@@ -41,6 +43,10 @@ pub const TokenList = struct {
 
     pub fn peek(self: *TokenList, offset: u8) Token {
         return self.tokens.items[self.index + offset];
+    }
+
+    pub fn consume(self: *TokenList) void {
+        self.index += 1;
     }
 
     pub fn dump(self: TokenList) void {
@@ -84,6 +90,9 @@ pub fn lex(src: []u8) !TokenList {
             } else {
                 try result.push(Token{ .type = TokenType.Identifier, .value = word, .line = line });
             }
+        } else if (src[cursor] == ',') {
+            try result.push(Token{ .type = TokenType.Comma, .value = ",", .line = line });
+            cursor += 1;
         } else if (src[cursor] == '(') {
             try result.push(Token{ .type = TokenType.LParen, .value = "(", .line = line });
             cursor += 1;
@@ -95,6 +104,17 @@ pub fn lex(src: []u8) !TokenList {
             cursor += 1;
         } else if (src[cursor] == '}') {
             try result.push(Token{ .type = TokenType.RBrace, .value = "}", .line = line });
+            cursor += 1;
+        } else if (src[cursor] == '\'') {
+            var start = cursor;
+
+            cursor += 1;
+            while (src[cursor] != '\'') {
+                cursor += 1;
+            }
+
+            var str = src[start..cursor];
+            try result.push(Token{ .type = TokenType.StringLiteral, .value = str, .line = line });
             cursor += 1;
         }
     }
